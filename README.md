@@ -19,5 +19,13 @@ called "modern", right?), you have two options:
 you don't want to run untrusted binaries, please consider one of the options
 above
 
+Fuzzing experience is not required.
+
+## Links
+
+* libFuzzer documentation: [http://libfuzzer.info](http://libfuzzer.info)
+* libFuzzer tutorial: [http://tutorial.libfuzzer.info](http://tutorial.libfuzzer.info)
+* Google Online Security Blog: [Guided in-process fuzzing of Chrome components](https://security.googleblog.com/2016/08/guided-in-process-fuzzing-of-chrome.html)
+
 
 [ZeroNights'16]: https://2016.zeronights.org/program/workshops/#ws1
