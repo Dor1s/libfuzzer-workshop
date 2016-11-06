@@ -6,7 +6,7 @@
 
 **Mutation engine**: [radamsa]
 
-**Seed corpus**: collected from previous [PDFium bugs].
+**Seed corpus**: collected from previous [PDFium bugs]
 
 
 ## Instruction
