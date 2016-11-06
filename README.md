@@ -24,7 +24,9 @@ Fuzzing experience is not required.
 ## Contents
 1. An introduction to fuzz testing
 2. An example of traditional fuzzing
-3. ...
+3. Coverage-guided fuzzing
+4. Writing fuzzers
+5. ...
 
 ## Links
 
