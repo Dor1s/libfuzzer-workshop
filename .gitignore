@@ -7,3 +7,6 @@ work
 # libFuzzer library. Should be built during the workshop.
 libFuzzer.a
 
+# clang binaries.
+bin/
+
