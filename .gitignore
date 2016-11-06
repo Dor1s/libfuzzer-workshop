@@ -4,3 +4,6 @@ plan.txt
 # Work directories.
 work
 
+# libFuzzer library. Should be built during the workshop.
+libFuzzer.a
+
