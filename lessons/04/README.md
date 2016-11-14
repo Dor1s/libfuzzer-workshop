@@ -1,3 +1,151 @@
 # Lesson 04
 
 Writing fuzzers. Here will be examples of different fuzzers.
+
+## Sample fuzzer #1
+
+Consider the following function:
+
+```cpp
+bool VulnerableFunction1(const uint8_t* data, size_t size) {
+  bool result = false;
+  if (size >= 3) {
+    result = data[0] == 'F' &&
+             data[1] == 'U' &&
+             data[2] == 'Z' &&
+             data[3] == 'Z';
+  }
+
+  return false;
+}
+```
+
+Do you see any bug there? Let's try to fuzz it with the following fuzz target:
+
+```cpp
+#include "vulnerable_functions.h"
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+  VulnerableFunction1(data, size);
+  return 0;
+}
+
+```
+
+Compile the fuzzer in the following way:
+```bash
+clang++ -g -fsanitize=address -fsanitize-coverage=trace-pc-guard \
+    first_fuzzer.cc ../../libFuzzer/libFuzzer.a \
+    -o first_fuzzer
+```
+
+Create an empty directory for corpus and run the fuzzer:
+
+```bash
+mkdir corpus1
+./first_fuzzer corpus1
+```
+
+You should see the following input:
+```bash
+$ ./first_fuzzer corpus1/
+INFO: Seed: 2547238898
+INFO: Loaded 1 modules (32 guards): [0x744ea0, 0x744f20), 
+Loading corpus dir: corpus1/
+INFO: -max_len is not provided, using 64
+INFO: A corpus is not provided, starting from an empty corpus
+#0  READ units: 1
+#1  INITED cov: 3 ft: 3 corp: 1/1b exec/s: 0 rss: 26Mb
+#10 NEW    cov: 4 ft: 4 corp: 2/31b exec/s: 0 rss: 26Mb L: 30 MS: 4 ChangeBit-ChangeByte-ShuffleBytes-InsertRepeatedBytes-
+#30588  NEW    cov: 5 ft: 5 corp: 3/60b exec/s: 0 rss: 29Mb L: 29 MS: 2 InsertByte-InsertRepeatedBytes-
+#124562 NEW    cov: 6 ft: 6 corp: 4/90b exec/s: 0 rss: 36Mb L: 30 MS: 1 InsertByte-
+#331574 NEW    cov: 7 ft: 7 corp: 5/99b exec/s: 0 rss: 52Mb L: 9 MS: 3 EraseBytes-CrossOver-InsertByte-
+=================================================================
+==14322==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000247d93 at pc 0x0000004f0781 bp 0x7ffd8e9af800 sp 0x7ffd8e9af7f8
+READ of size 1 at 0x602000247d93 thread T0
+    #0 0x4f0780  (/home/mmoroz/projects/libfuzzer-workshop/lessons/04/first_fuzzer+0x4f0780)
+    #1 0x4f07f9  (/home/mmoroz/projects/libfuzzer-workshop/lessons/04/first_fuzzer+0x4f07f9)
+    #2 0x4f9f17  (/home/mmoroz/projects/libfuzzer-workshop/lessons/04/first_fuzzer+0x4f9f17)
+    #3 0x4fa100  (/home/mmoroz/projects/libfuzzer-workshop/lessons/04/first_fuzzer+0x4fa100)
+    <...>
+```
+
+Wow! The fuzzer has just found a **heap-buffer-overflow**. Let's try to
+reproduce the crash:
+
+```bash
+$ ./first_fuzzer crash-0eb8e4ed029b774d80f2b66408203801cb982a60 
+```
+
+To get a symbolized stacktrace, add `symbolize=1` option to `ASAN_OPTIONS` env
+variable:
+```bash
+ASAN_OPTIONS=symbolize=1 $ ./first_fuzzer crash-0eb8e4ed029b774d80f2b66408203801cb982a60 
+```
+
+The symbolized result looks like:
+
+```bash
+INFO: Seed: 3080648570
+INFO: Loaded 1 modules (32 guards): [0x744ea0, 0x744f20), 
+./first_fuzzer: Running 1 inputs 1 time(s) each.
+Running: crash-0eb8e4ed029b774d80f2b66408203801cb982a60
+=================================================================
+==15226==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000093 at pc 0x0000004f0781 bp 0x7ffe1dda1650 sp 0x7ffe1dda1648
+READ of size 1 at 0x602000000093 thread T0
+    #0 0x4f0780 in VulnerableFunction1(unsigned char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/lessons/04/./vulnerable_functions.h:16:14
+    #1 0x4f07f9 in LLVMFuzzerTestOneInput /home/mmoroz/projects/libfuzzer-workshop/lessons/04/sample_fuzzer_one.cc:10:3
+    #2 0x4f9f17 in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerLoop.cpp:515:13
+    #3 0x4fa100 in fuzzer::Fuzzer::RunOne(unsigned char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerLoop.cpp:469:3
+    #4 0x4f0983 in fuzzer::RunOneTest(fuzzer::Fuzzer*, char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerDriver.cpp:272:6
+    #5 0x4f2642 in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerDriver.cpp:482:9
+    #6 0x4f08b0 in main /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerMain.cpp:20:10
+    #7 0x7f64a1cdbf44 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21f44)
+    #8 0x41b557 in _start (/home/mmoroz/projects/libfuzzer-workshop/lessons/04/first_fuzzer+0x41b557)
+
+0x602000000093 is located 0 bytes to the right of 3-byte region [0x602000000090,0x602000000093)
+allocated by thread T0 here:
+    #0 0x4ed57b in operator new[](unsigned long) (/home/mmoroz/projects/libfuzzer-workshop/lessons/04/first_fuzzer+0x4ed57b)
+    #1 0x4f9e5a in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerLoop.cpp:506:23
+    #2 0x4fa100 in fuzzer::Fuzzer::RunOne(unsigned char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerLoop.cpp:469:3
+    #3 0x4f0983 in fuzzer::RunOneTest(fuzzer::Fuzzer*, char const*, unsigned long) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerDriver.cpp:272:6
+    #4 0x4f2642 in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerDriver.cpp:482:9
+    #5 0x4f08b0 in main /home/mmoroz/projects/libfuzzer-workshop/libFuzzer/Fuzzer/FuzzerMain.cpp:20:10
+    #6 0x7f64a1cdbf44 in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x21f44)
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /home/mmoroz/projects/libfuzzer-workshop/lessons/04/./vulnerable_functions.h:16:14 in VulnerableFunction1(unsigned char const*, unsigned long)
+Shadow bytes around the buggy address:
+  0x0c047fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c047fff7fd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c047fff7fe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c047fff7ff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c047fff8000: fa fa 00 00 fa fa 00 fa fa fa 00 fa fa fa 03 fa
+=>0x0c047fff8010: fa fa[03]fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c047fff8020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c047fff8030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c047fff8040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c047fff8050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c047fff8060: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==15226==ABORTING
+```
+
+

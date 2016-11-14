@@ -7,6 +7,14 @@ work
 # libFuzzer library. Should be built during the workshop.
 libFuzzer.a
 
-# clang binaries.
+# clang and other binaries.
 bin/
 
+# corpus directories.
+corpus*
+
+# crash testcases
+crash*
+
+# fuzzers binaries.
+*_fuzzer
