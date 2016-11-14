@@ -28,6 +28,27 @@ Fuzzing experience is not required.
 4. Writing fuzzers
 5. ...
 
+## Prerequisites
+
+### clang
+
+To complete this workshop, you need to use a fresh revision of `clang` and
+`llvm-symbolizer` tools. You can use the binaries provided in `bin` directory of
+this repository. To use them without specifying an absolute path, you can:
+* add `bin` directory to the `PATH` env variable:
+```bash
+export PATH="$PWD/bin:$PATH"
+```
+* create symbolic links in `/usr/bin` or any other directory of your choice
+
+### libFuzzer
+Building libFuzzer is extreemly easy:
+```bash
+cd libFuzzer
+Fuzzer/build.sh
+```
+
+
 ## Links
 
 * libFuzzer documentation: [http://libfuzzer.info](http://libfuzzer.info)
