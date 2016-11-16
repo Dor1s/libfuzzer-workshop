@@ -46,14 +46,3 @@ sudo ninja install
 rm -rf $WORK_DIR/work/llvm
 
 
-#
-sudo apt-get install -y make autoconf automake libtool
-
-# Copy libfuzzer sources
-#mkdir /src/libfuzzer
-#cp -r /src/llvm/lib/Fuzzer/* /src/libfuzzer/
-
-#cp /src/llvm/tools/sancov/coverage-report-server.py /usr/local/bin/
-
-# Cleanup
-#rm -rf /src/llvm
