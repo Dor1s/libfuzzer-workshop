@@ -1,4 +1,4 @@
-# Lesson HB
+# Lesson 05
 
 Here we will find Heartbleed vulnerability (CVE-2014-0160).
 

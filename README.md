@@ -25,8 +25,10 @@ Fuzzing experience is not required.
 1. An introduction to fuzz testing
 2. An example of traditional fuzzing
 3. Coverage-guided fuzzing
-4. Writing fuzzers
-5. ...
+4. Writing fuzzers (simple examples)
+5. Finding Heartbleed (CVE-2014-0160)
+6. Finding c-ares $100,000 bug (CVE-2016-5180)
+...
 
 ## Prerequisites
 
