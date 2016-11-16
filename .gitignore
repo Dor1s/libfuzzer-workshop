@@ -21,3 +21,8 @@ crash*
 
 # openssl sources after unpacking
 openssl1.0.1f
+
+# c-ares sources after unpacking
+c-ares
+
+
