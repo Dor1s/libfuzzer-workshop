@@ -37,6 +37,9 @@ cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/libcxx
 # Build & Install
 mkdir -p $WORK_DIR/work/llvm
 cd $WORK_DIR/work/llvm
+
+# Consider adding of -DCMAKE_INSTALL_PREFIX=%PATH% flag, if you do not want to
+# install fresh llvm binaries into standard system paths.
 cmake -G "Ninja" \
       -DLIBCXX_ENABLE_SHARED=OFF -DLIBCXX_ENABLE_STATIC_ABI_LIBRARY=ON \
       -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD="X86" \
