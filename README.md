@@ -16,7 +16,7 @@ called "modern", right?), you have two options:
      feel free to use [checkout_build_install_llvm.sh] script, it has been
      tested on clean Ubuntu 16.04
    * a VirtualBox VM with working environment will be provided at the workshop
-* `sudo apt-get install -y make autoconf automake libtool`
+* `sudo apt-get install -y make autoconf automake libtool pkg-config zlib1g-dev`
 
 
 Fuzzing experience is not required.
