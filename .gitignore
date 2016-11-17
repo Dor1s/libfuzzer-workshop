@@ -19,10 +19,15 @@ crash*
 # fuzzers binaries.
 *_fuzzer
 
-# openssl sources after unpacking
+# openssl sources after unpacking.
 openssl1.0.1f
 
-# c-ares sources after unpacking
+# c-ares sources after unpacking.
 c-ares
 
+# libxml2 sources after unpacking.
+libxml2
 
+# coverage files.
+*sancov
+*symcov
