@@ -31,3 +31,6 @@ libxml2
 # coverage files.
 *sancov
 *symcov
+
+# oom crashes.
+oom-*
