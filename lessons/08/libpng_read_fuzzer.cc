@@ -66,7 +66,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
-  png_set_user_limits(png_handler.png_ptr, 65535, 65535);
+  png_set_user_limits(png_handler.png_ptr, 2048, 2048);
 
   png_set_crc_action(png_handler.png_ptr, PNG_CRC_QUIET_USE, PNG_CRC_QUIET_USE);
 
@@ -110,6 +110,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // This is going to be too slow.
   if (width && height > 100000000 / width)
+    return 0;
+
+  if (width > 2048 || height > 2048)
     return 0;
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
