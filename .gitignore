@@ -43,3 +43,7 @@ timeout-*
 
 # re2 sources after unpacking.
 re2
+
+# pcre2 sources after unpacking.
+pcre2
+pcre2-10.00

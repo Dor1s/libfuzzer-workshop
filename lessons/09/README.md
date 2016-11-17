@@ -10,7 +10,7 @@ Here we will be fuzzing [re2]. During this lesson we will:
 tar xzf re2.tgz
 cd re2
 
-export $FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
     -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
 
 make clean

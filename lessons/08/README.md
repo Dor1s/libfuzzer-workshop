@@ -20,7 +20,7 @@ mv scripts/pnglibconf.dfa.temp scripts/pnglibconf.dfa
 # build the library.
 autoreconf -f -i
 
-export $FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
     -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
 
 ./configure CC="clang" CFLAGS="$FUZZ_CXXFLAGS"
