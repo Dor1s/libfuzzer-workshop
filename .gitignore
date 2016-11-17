@@ -34,3 +34,9 @@ libxml2
 
 # oom crashes.
 oom-*
+
+# libpng sources after unpacking.
+libpng
+
+# timeout crashes.
+timeout-*

@@ -28,7 +28,9 @@ Fuzzing experience is not required.
 4. Writing fuzzers (simple examples)
 5. Finding Heartbleed (CVE-2014-0160)
 6. Finding c-ares $100,000 bug (CVE-2016-5180)
-7. <...>
+7. Fuzzing libxml2, learning how to improve the fuzzer and analyze performance
+8. Fuzzing libpng, learning an importance of seed corpus and other stuff
+9. <...>
 
 ## Prerequisites
 

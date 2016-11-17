@@ -10,7 +10,9 @@ Here we will be fuzzing [libxml2]. During this lesson we will:
 ### Build the library
 
 ```bash
+tar xzf libxml.tgz
 cd libxml2
+
 ./autogen.sh
 
 export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
