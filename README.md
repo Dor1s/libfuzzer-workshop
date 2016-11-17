@@ -30,7 +30,11 @@ Fuzzing experience is not required.
 6. Finding c-ares $100,000 bug (CVE-2016-5180)
 7. Fuzzing libxml2, learning how to improve the fuzzer and analyze performance
 8. Fuzzing libpng, learning an importance of seed corpus and other stuff
-9. <...>
+9. Fuzzing re2 (TODO: add problems?)
+10. Fuzzing pcre2
+11. Chromium integration
+12. OSS-Fuzz project
+
 
 ## Prerequisites
 

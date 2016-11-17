@@ -40,3 +40,6 @@ libpng
 
 # timeout crashes.
 timeout-*
+
+# re2 sources after unpacking.
+re2
