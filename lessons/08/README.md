@@ -70,7 +70,7 @@ Run two more fuzzer instances. One with the seed corpus:
 mkdir corpus3
 ./libpng_read_fuzzer -max_len=2048 -max_total_time=300 -print_final_stats=1 \
     -timeout=5 corpus3 seed_corpus
-``
+```
 
 And another one with the seed corpus and the dictionary (super-combo!):
 

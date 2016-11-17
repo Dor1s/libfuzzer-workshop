@@ -10,7 +10,7 @@ Here we will be fuzzing [libxml2]. During this lesson we will:
 ### Build the library
 
 ```bash
-tar xzf libxml.tgz
+tar xzf libxml2.tgz
 cd libxml2
 
 ./autogen.sh
