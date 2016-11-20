@@ -14,6 +14,7 @@
 Take a look at [generate_testcases.py](generate_testcases.py) scripts. Then use
 `radamsa` to generate testcases from `seed_corpus`:
 ```bash
+cd lessons/02
 ./generate_testcases.py
 ```
 
@@ -25,7 +26,7 @@ ls work/corpus/ | wc -l
 
 Take a look at [run_fuzzing.py](run_fuzzing.py) script. Then run fuzzing:
 ```bash
-unxz bin/asan.tar.xz && tar xf bin/asan.tar
+tar xzf bin/asan.tgz
 ./run_fuzzing.py
 ```
 
