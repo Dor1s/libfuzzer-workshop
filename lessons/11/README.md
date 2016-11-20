@@ -99,7 +99,6 @@ READ of size 1 at 0x61000012caca thread T0
     <...>
 ```
 
-Happy fuzzing!
 
 
 [pcre2]: http://www.pcre.org/current/doc/html/pcre2.html
