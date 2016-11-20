@@ -31,10 +31,13 @@ Fuzzing experience is not required.
 7. How to improve your fuzzer
 8. Fuzzing libxml2, learning how to improve the fuzzer and analyze performance
 9. Fuzzing libpng, learning an importance of seed corpus and other stuff
-10. Fuzzing re2 (TODO: add problems?)
+10. Fuzzing re2
 11. Fuzzing pcre2
 12. Chromium integration & homework assignment
 
+
+The most of examples has been taken from [libFuzzer tutorial] and
+[Fuzzer Test Suite].
 
 ## Prerequisites
 
@@ -48,12 +51,15 @@ Fuzzer/build.sh
 
 ## Links
 
-* all slides in a single presentation: [Google Slides](https://docs.google.com/presentation/d/1pbbXRL7HaNSjyCHWgGkbpNotJuiC4O7L_PDZoGqDf5Q/edit?usp=sharing)
+* all slides in a single presentation: [Modern Fuzzing of C/C++ Projects](https://docs.google.com/presentation/d/1pbbXRL7HaNSjyCHWgGkbpNotJuiC4O7L_PDZoGqDf5Q/edit?usp=sharing)
 * libFuzzer documentation: [http://libfuzzer.info](http://libfuzzer.info)
 * libFuzzer tutorial: [http://tutorial.libfuzzer.info](http://tutorial.libfuzzer.info)
 * Google Online Security Blog: [Guided in-process fuzzing of Chrome components](https://security.googleblog.com/2016/08/guided-in-process-fuzzing-of-chrome.html)
 
 
-[checkout_build_install_llvm.sh]: checkout_build_install_llvm.sh
+
+[Fuzzer Test Suite]: https://github.com/google/fuzzer-test-suite
 [VirtualBox VM]: https://drive.google.com/file/d/0B19rvTqcOBfTaXJoeXZpcXNhMUE/view?usp=sharing
 [ZeroNights'16]: https://2016.zeronights.org/program/workshops/#ws1
+[checkout_build_install_llvm.sh]: checkout_build_install_llvm.sh
+[libFuzzer tutorial]: http://tutorial.libfuzzer.info
