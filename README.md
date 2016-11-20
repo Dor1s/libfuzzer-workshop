@@ -28,12 +28,12 @@ Fuzzing experience is not required.
 4. Writing fuzzers (simple examples)
 5. Finding Heartbleed (CVE-2014-0160)
 6. Finding c-ares $100,000 bug (CVE-2016-5180)
-7. Fuzzing libxml2, learning how to improve the fuzzer and analyze performance
-8. Fuzzing libpng, learning an importance of seed corpus and other stuff
-9. Fuzzing re2 (TODO: add problems?)
-10. Fuzzing pcre2
-11. Chromium integration
-12. OSS-Fuzz project
+7. How to improve your fuzzer
+8. Fuzzing libxml2, learning how to improve the fuzzer and analyze performance
+9. Fuzzing libpng, learning an importance of seed corpus and other stuff
+10. Fuzzing re2 (TODO: add problems?)
+11. Fuzzing pcre2
+12. Chromium integration & homework assignment
 
 
 ## Prerequisites
@@ -48,6 +48,7 @@ Fuzzer/build.sh
 
 ## Links
 
+* all slides in a single presentation: [Google Slides](https://docs.google.com/presentation/d/1pbbXRL7HaNSjyCHWgGkbpNotJuiC4O7L_PDZoGqDf5Q/edit?usp=sharing)
 * libFuzzer documentation: [http://libfuzzer.info](http://libfuzzer.info)
 * libFuzzer tutorial: [http://tutorial.libfuzzer.info](http://tutorial.libfuzzer.info)
 * Google Online Security Blog: [Guided in-process fuzzing of Chrome components](https://security.googleblog.com/2016/08/guided-in-process-fuzzing-of-chrome.html)

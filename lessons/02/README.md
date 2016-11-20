@@ -11,7 +11,8 @@
 
 ## Instruction
 
-Use `radamsa` to generate testcases from `seed_corpus`:
+Take a look at [generate_testcases.py](generate_testcases.py) scripts. Then use
+`radamsa` to generate testcases from `seed_corpus`:
 ```bash
 ./generate_testcases.py
 ```
@@ -22,13 +23,14 @@ ls work/corpus/ | wc -l
 1000
 ```
 
-Run fuzzing:
+Take a look at [run_fuzzing.py](run_fuzzing.py) script. Then run fuzzing:
 ```bash
 unxz bin/asan.tar.xz && tar xf bin/asan.tar
 ./run_fuzzing.py
 ```
 
-If you don't see any output, no crash has been found.
+If you don't see any output, no crash has been found. Feel free to re-generate
+testcases many more times. Though it should take for a while to find a crash.
 
 
 [pdfium]: https://pdfium.googlesource.com/pdfium/
