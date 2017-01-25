@@ -1,7 +1,8 @@
 # libfuzzer-workshop
 Materials of *"Modern fuzzing of C/C++ Projects"* workshop.
 
-The workshop will be hosted at [ZeroNights'16] security conference.
+The first version of the workshop had been presented at [ZeroNights'16] security
+conference.
 
 ## Requirements
 
