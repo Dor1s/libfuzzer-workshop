@@ -38,7 +38,7 @@ Fuzzing experience is not required.
 12. Chromium integration & homework assignment
 
 
-The most of examples has been taken from [libFuzzer tutorial] and
+Most of the examples have been taken from [libFuzzer tutorial] and
 [Fuzzer Test Suite].
 
 ## Prerequisites
