@@ -61,7 +61,7 @@ Fuzzer/build.sh
 
 
 [Fuzzer Test Suite]: https://github.com/google/fuzzer-test-suite
-[VirtualBox VM]: https://drive.google.com/file/d/0B19rvTqcOBfTaXJoeXZpcXNhMUE/view?usp=sharing
+[VirtualBox VM]: https://drive.google.com/file/d/0B19rvTqcOBfTZHZseDk3ZkNjWHc/view?usp=sharing
 [ZeroNights'16]: https://2016.zeronights.org/program/workshops/#ws1
 [checkout_build_install_llvm.sh]: checkout_build_install_llvm.sh
 [libFuzzer tutorial]: http://tutorial.libfuzzer.info
