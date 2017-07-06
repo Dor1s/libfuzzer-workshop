@@ -162,7 +162,7 @@ strings corpus2_min/* | more
 ### Generate coverage report
 
 ```bash
-ASAN_OPTIONS=coverage=1 ./xml_read_memory_fuzzer corpus1_min -runs=0
+./xml_read_memory_fuzzer corpus1_min -runs=0 -dump_coverage=1
 ```
 
 This command should generate `.sancov` file in your working directory:
