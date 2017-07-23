@@ -16,7 +16,7 @@ cd libxml2
 ./autogen.sh
 
 export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=edge,indirect-calls,8bit-counters,trace-cmp,trace-div,trace-gep"
+    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep,trace-pc-guard"
 
 CXX="clang++ $FUZZ_CXXFLAGS" CC="clang $FUZZ_CXXFLAGS" \
     CCLD="clang++ $FUZZ_CXXFLAGS"  ./configure
