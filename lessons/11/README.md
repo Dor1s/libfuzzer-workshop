@@ -1,4 +1,4 @@
-# Lesson 10
+# Lesson 11
 
 Here we will be fuzzing [pcre2]. During this lesson we will:
 * compare fuzzing of different regexp libraries
