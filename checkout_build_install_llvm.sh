@@ -34,6 +34,10 @@ cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/compil
 cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/libcxx.git
 cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/libcxxabi.git
 
+# Uncomment if you want *fresh* libFuzzer from checkouted repository.
+#rm -r $WORK_DIR/libFuzzer/Fuzzer
+#cp -r $WORK_DIR/src/llvm/projects/compiler-rt/lib/fuzzer/ $WORK_DIR/libFuzzer/Fuzzer
+
 # Build & Install
 mkdir -p $WORK_DIR/work/llvm
 cd $WORK_DIR/work/llvm
