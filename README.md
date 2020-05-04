@@ -50,6 +50,8 @@ cd libFuzzer
 Fuzzer/build.sh
 ```
 
+libFuzzer repository could be found inside LLVM's compiler-rt project.
+
 
 ## Links
 
