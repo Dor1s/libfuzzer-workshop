@@ -34,7 +34,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
 Compile the fuzzer in the following way:
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
+clang++ -g -std=c++11 -fsanitize=address,fuzzer \
     first_fuzzer.cc ../../libFuzzer/libFuzzer.a \
     -o first_fuzzer
 ```
@@ -205,7 +205,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Compile the fuzzer:
 
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
+clang++ -g -std=c++11 -fsanitize=address,fuzzer \
     second_fuzzer.cc ../../libFuzzer/libFuzzer.a \
     -o second_fuzzer
 ```
@@ -256,7 +256,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Compile the fuzzer:
 
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
+clang++ -g -std=c++11 -fsanitize=address,fuzzer \
     third_fuzzer.cc ../../libFuzzer/libFuzzer.a \
     -o third_fuzzer
 ```
@@ -363,7 +363,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Compile the fuzzer:
 
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
+clang++ -g -std=c++11 -fsanitize=address,fuzzer \
     fourth_fuzzer.cc ../../libFuzzer/libFuzzer.a \
     -o fourth_fuzzer
 ```
