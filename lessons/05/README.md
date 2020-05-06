@@ -15,7 +15,7 @@ cd openssl1.0.1f/
 
 ./config
 make clean
-make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j4
+make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j4
 ```
 
 ### Build and run the fuzzer
@@ -80,6 +80,49 @@ clang++ -g openssl_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address,fuzz
 Run the fuzzer:
 
 ```bash
+mkdir corpus1
+./openssl_fuzzer ./corpus1/
+```
+
+We see that nothing happens - nor new paths. That turns that library was not correctly build (without `-fsanitize=fuzzer`).
+We were running dumb fuzzing, because library was not instrumentated.
+
+```bash
+cd openssl1.0.1f/
+
+make clean
+make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j4
+```
+
+During build after enabling libFuzzer instrumentation within library build, we will see error:
+```
+/usr/local/lib/clang/10.0.0/lib/linux/libclang_rt.fuzzer-x86_64.a(fuzzer.o): In function `main':
+.../libfuzzer-workshop/src/llvm/projects/compiler-rt/lib/fuzzer/FuzzerMain.cpp:19: undefined reference to `LLVMFuzzerTestOneInput'
+clang-10: error: linker command failed with exit code 1 (use -v to see invocation)
+```
+
+We should not link with standalone libFuzzer fuzzer function, because it is definied outside of library source code.
+See libFuzzer code and LLVM user manual for deeper understanding.
+
+At the end we manage to build openssl without errors:
+
+```bash
+make clean
+make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j4
+```
+
+In both cases fuzzing would work neither error, but linking errors or compiler errors could prevent libraries from build.
+
+We are building fuzzer and try again.
+
+```bash
+cd ..
+clang++ -g openssl_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address,fuzzer \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div \
+    -Iopenssl1.0.1f/include openssl1.0.1f/libssl.a openssl1.0.1f/libcrypto.a \
+    ../../libFuzzer/libFuzzer.a -o openssl_fuzzer
+
+rm -r corpus1
 mkdir corpus1
 ./openssl_fuzzer ./corpus1/
 ```
