@@ -3,7 +3,7 @@
 Here we will find Heartbleed vulnerability (CVE-2014-0160).
 
 ***
-This example has been taken from [google/fuzzer-stest-suite] repository.
+This example has been taken from [google/fuzzer-test-suite] repository.
 ***
 
 
@@ -164,4 +164,4 @@ vulnerabilities can be found in a few minutes. Fuzzing is awesome.
 
 
 [Heartbleed]: https://en.wikipedia.org/wiki/Heartbleed
-[google/fuzzer-stest-suite]: https://github.com/google/fuzzer-test-suite/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
+[google/fuzzer-test-suite]: https://github.com/google/fuzzer-test-suite/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
