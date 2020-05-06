@@ -4,7 +4,7 @@ Here we will find [c-ares] vulnerability (CVE-2016-5180) that has been exploited
 to obtain [remote code execution] with root privileges on ChromeOS.
 
 ***
-This example has been taken from [google/fuzzer-test-suite] repository.
+This example has been taken from [google/fuzzer-test-suite] repository (tutorial moved to [google/fuzzing]).
 ***
 
 
@@ -93,4 +93,5 @@ WRITE of size 1 at 0x6030000470f5 thread T0
 
 [c-ares]: https://c-ares.haxx.se/
 [remote code execution]: https://googlechromereleases.blogspot.com/2016/09/stable-channel-updates-for-chrome-os.html
+[google/fuzzing]: https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
 [google/fuzzer-test-suite]: https://github.com/google/fuzzer-test-suite/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
