@@ -165,4 +165,4 @@ vulnerabilities can be found in a few minutes. Fuzzing is awesome.
 
 [Heartbleed]: https://en.wikipedia.org/wiki/Heartbleed
 [google/fuzzing]: https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
-[google/fuzzer-test-suite]: https://github.com/google/fuzzer-test-suite/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
+[google/fuzzer-test-suite]: https://github.com/google/fuzzer-test-suite/tree/master/openssl-1.0.1f

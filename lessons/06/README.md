@@ -94,4 +94,4 @@ WRITE of size 1 at 0x6030000470f5 thread T0
 [c-ares]: https://c-ares.haxx.se/
 [remote code execution]: https://googlechromereleases.blogspot.com/2016/09/stable-channel-updates-for-chrome-os.html
 [google/fuzzing]: https://github.com/google/fuzzing/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
-[google/fuzzer-test-suite]: https://github.com/google/fuzzer-test-suite/blob/master/tutorial/libFuzzerTutorial.md#heartbleed
+[google/fuzzer-test-suite]: https://github.com/google/fuzzer-test-suite/tree/master/c-ares-CVE-2016-5180
