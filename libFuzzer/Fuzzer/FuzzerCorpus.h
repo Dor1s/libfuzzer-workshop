@@ -1,9 +1,8 @@
 //===- FuzzerCorpus.h - Internal header for the Fuzzer ----------*- C++ -* ===//
 //
-//                     The LLVM Compiler Infrastructure
-//
-// This file is distributed under the University of Illinois Open Source
-// License. See LICENSE.TXT for details.
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
 // fuzzer::InputCorpus
@@ -12,6 +11,7 @@
 #ifndef LLVM_FUZZER_CORPUS
 #define LLVM_FUZZER_CORPUS
 
+#include "FuzzerDataFlowTrace.h"
 #include "FuzzerDefs.h"
 #include "FuzzerIO.h"
 #include "FuzzerRandom.h"
@@ -34,11 +34,15 @@ struct InputInfo {
   size_t NumExecutedMutations = 0;
   size_t NumSuccessfullMutations = 0;
   bool MayDeleteFile = false;
+  bool Reduced = false;
+  bool HasFocusFunction = false;
+  Vector<uint32_t> UniqFeatureSet;
+  Vector<uint8_t> DataFlowTraceForFocusFunction;
 };
 
 class InputCorpus {
+  static const size_t kFeatureSetSize = 1 << 21;
  public:
-  static const size_t kFeatureSetSize = 1 << 16;
   InputCorpus(const std::string &OutputCorpus) : OutputCorpus(OutputCorpus) {
     memset(InputSizesPerFeature, 0, sizeof(InputSizesPerFeature));
     memset(SmallestElementPerFeature, 0, sizeof(SmallestElementPerFeature));
@@ -66,23 +70,99 @@ class InputCorpus {
         Res = std::max(Res, II->U.size());
     return Res;
   }
+
+  size_t NumInputsThatTouchFocusFunction() {
+    return std::count_if(Inputs.begin(), Inputs.end(), [](const InputInfo *II) {
+      return II->HasFocusFunction;
+    });
+  }
+
+  size_t NumInputsWithDataFlowTrace() {
+    return std::count_if(Inputs.begin(), Inputs.end(), [](const InputInfo *II) {
+      return !II->DataFlowTraceForFocusFunction.empty();
+    });
+  }
+
   bool empty() const { return Inputs.empty(); }
   const Unit &operator[] (size_t Idx) const { return Inputs[Idx]->U; }
-  void AddToCorpus(const Unit &U, size_t NumFeatures, bool MayDeleteFile = false) {
+  InputInfo *AddToCorpus(const Unit &U, size_t NumFeatures, bool MayDeleteFile,
+                         bool HasFocusFunction,
+                         const Vector<uint32_t> &FeatureSet,
+                         const DataFlowTrace &DFT, const InputInfo *BaseII) {
     assert(!U.empty());
-    uint8_t Hash[kSHA1NumBytes];
     if (FeatureDebug)
       Printf("ADD_TO_CORPUS %zd NF %zd\n", Inputs.size(), NumFeatures);
-    ComputeSHA1(U.data(), U.size(), Hash);
-    Hashes.insert(Sha1ToString(Hash));
     Inputs.push_back(new InputInfo());
     InputInfo &II = *Inputs.back();
     II.U = U;
     II.NumFeatures = NumFeatures;
     II.MayDeleteFile = MayDeleteFile;
-    memcpy(II.Sha1, Hash, kSHA1NumBytes);
+    II.UniqFeatureSet = FeatureSet;
+    II.HasFocusFunction = HasFocusFunction;
+    std::sort(II.UniqFeatureSet.begin(), II.UniqFeatureSet.end());
+    ComputeSHA1(U.data(), U.size(), II.Sha1);
+    auto Sha1Str = Sha1ToString(II.Sha1);
+    Hashes.insert(Sha1Str);
+    if (HasFocusFunction)
+      if (auto V = DFT.Get(Sha1Str))
+        II.DataFlowTraceForFocusFunction = *V;
+    // This is a gross heuristic.
+    // Ideally, when we add an element to a corpus we need to know its DFT.
+    // But if we don't, we'll use the DFT of its base input.
+    if (II.DataFlowTraceForFocusFunction.empty() && BaseII)
+      II.DataFlowTraceForFocusFunction = BaseII->DataFlowTraceForFocusFunction;
     UpdateCorpusDistribution();
-    ValidateFeatureSet();
+    PrintCorpus();
+    // ValidateFeatureSet();
+    return &II;
+  }
+
+  // Debug-only
+  void PrintUnit(const Unit &U) {
+    if (!FeatureDebug) return;
+    for (uint8_t C : U) {
+      if (C != 'F' && C != 'U' && C != 'Z')
+        C = '.';
+      Printf("%c", C);
+    }
+  }
+
+  // Debug-only
+  void PrintFeatureSet(const Vector<uint32_t> &FeatureSet) {
+    if (!FeatureDebug) return;
+    Printf("{");
+    for (uint32_t Feature: FeatureSet)
+      Printf("%u,", Feature);
+    Printf("}");
+  }
+
+  // Debug-only
+  void PrintCorpus() {
+    if (!FeatureDebug) return;
+    Printf("======= CORPUS:\n");
+    int i = 0;
+    for (auto II : Inputs) {
+      if (std::find(II->U.begin(), II->U.end(), 'F') != II->U.end()) {
+        Printf("[%2d] ", i);
+        Printf("%s sz=%zd ", Sha1ToString(II->Sha1).c_str(), II->U.size());
+        PrintUnit(II->U);
+        Printf(" ");
+        PrintFeatureSet(II->UniqFeatureSet);
+        Printf("\n");
+      }
+      i++;
+    }
+  }
+
+  void Replace(InputInfo *II, const Unit &U) {
+    assert(II->U.size() > U.size());
+    Hashes.erase(Sha1ToString(II->Sha1));
+    DeleteFile(*II);
+    ComputeSHA1(U.data(), U.size(), II->Sha1);
+    Hashes.insert(Sha1ToString(II->Sha1));
+    II->U = U;
+    II->Reduced = true;
+    UpdateCorpusDistribution();
   }
 
   bool HasUnit(const Unit &U) { return Hashes.count(Hash(U)); }
@@ -91,11 +171,9 @@ class InputCorpus {
     InputInfo &II = *Inputs[ChooseUnitIdxToMutate(Rand)];
     assert(!II.U.empty());
     return II;
-  };
+  }
 
   // Returns an index of random unit from the corpus to mutate.
-  // Hypothesis: units added to the corpus last are more likely to be
-  // interesting. This function gives more weight to the more recent units.
   size_t ChooseUnitIdxToMutate(Random &Rand) {
     size_t Idx = static_cast<size_t>(CorpusDistribution(Rand));
     assert(Idx < Inputs.size());
@@ -105,9 +183,9 @@ class InputCorpus {
   void PrintStats() {
     for (size_t i = 0; i < Inputs.size(); i++) {
       const auto &II = *Inputs[i];
-      Printf("  [%zd %s]\tsz: %zd\truns: %zd\tsucc: %zd\n", i,
+      Printf("  [% 3zd %s] sz: % 5zd runs: % 5zd succ: % 5zd focus: %d\n", i,
              Sha1ToString(II.Sha1).c_str(), II.U.size(),
-             II.NumExecutedMutations, II.NumSuccessfullMutations);
+             II.NumExecutedMutations, II.NumSuccessfullMutations, II.HasFocusFunction);
     }
   }
 
@@ -123,10 +201,14 @@ class InputCorpus {
     Printf("\n");
   }
 
-  void DeleteInput(size_t Idx) {
-    InputInfo &II = *Inputs[Idx];
+  void DeleteFile(const InputInfo &II) {
     if (!OutputCorpus.empty() && II.MayDeleteFile)
       RemoveFile(DirPlusFile(OutputCorpus, Sha1ToString(II.Sha1)));
+  }
+
+  void DeleteInput(size_t Idx) {
+    InputInfo &II = *Inputs[Idx];
+    DeleteFile(II);
     Unit().swap(II.U);
     if (FeatureDebug)
       Printf("EVICTED %zd\n", Idx);
@@ -144,29 +226,21 @@ class InputCorpus {
         II.NumFeatures--;
         if (II.NumFeatures == 0)
           DeleteInput(OldIdx);
+      } else {
+        NumAddedFeatures++;
       }
+      NumUpdatedFeatures++;
       if (FeatureDebug)
         Printf("ADD FEATURE %zd sz %d\n", Idx, NewSize);
       SmallestElementPerFeature[Idx] = Inputs.size();
       InputSizesPerFeature[Idx] = NewSize;
-      CountingFeatures = true;
       return true;
     }
     return false;
   }
 
-  size_t NumFeatures() const {
-    size_t Res = 0;
-    for (size_t i = 0; i < kFeatureSetSize; i++)
-      Res += GetFeature(i) != 0;
-    return Res;
-  }
-
-  void ResetFeatureSet() {
-    assert(Inputs.empty());
-    memset(InputSizesPerFeature, 0, sizeof(InputSizesPerFeature));
-    memset(SmallestElementPerFeature, 0, sizeof(SmallestElementPerFeature));
-  }
+  size_t NumFeatures() const { return NumAddedFeatures; }
+  size_t NumFeatureUpdates() const { return NumUpdatedFeatures; }
 
 private:
 
@@ -175,7 +249,6 @@ private:
   size_t GetFeature(size_t Idx) const { return InputSizesPerFeature[Idx]; }
 
   void ValidateFeatureSet() {
-    if (!CountingFeatures) return;
     if (FeatureDebug)
       PrintFeatureSet();
     for (size_t Idx = 0; Idx < kFeatureSetSize; Idx++)
@@ -191,28 +264,41 @@ private:
 
   // Updates the probability distribution for the units in the corpus.
   // Must be called whenever the corpus or unit weights are changed.
+  //
+  // Hypothesis: units added to the corpus last are more interesting.
+  //
+  // Hypothesis: inputs with infrequent features are more interesting.
   void UpdateCorpusDistribution() {
     size_t N = Inputs.size();
+    assert(N);
     Intervals.resize(N + 1);
     Weights.resize(N);
     std::iota(Intervals.begin(), Intervals.end(), 0);
-    if (CountingFeatures)
+    for (size_t i = 0; i < N; i++)
+      Weights[i] = Inputs[i]->NumFeatures
+                       ? (i + 1) * (Inputs[i]->HasFocusFunction ? 1000 : 1)
+                       : 0.;
+    if (FeatureDebug) {
       for (size_t i = 0; i < N; i++)
-        Weights[i] = Inputs[i]->NumFeatures * (i + 1);
-    else
-      std::iota(Weights.begin(), Weights.end(), 1);
+        Printf("%zd ", Inputs[i]->NumFeatures);
+      Printf("SCORE\n");
+      for (size_t i = 0; i < N; i++)
+        Printf("%f ", Weights[i]);
+      Printf("Weights\n");
+    }
     CorpusDistribution = std::piecewise_constant_distribution<double>(
         Intervals.begin(), Intervals.end(), Weights.begin());
   }
   std::piecewise_constant_distribution<double> CorpusDistribution;
 
-  std::vector<double> Intervals;
-  std::vector<double> Weights;
+  Vector<double> Intervals;
+  Vector<double> Weights;
 
   std::unordered_set<std::string> Hashes;
-  std::vector<InputInfo*> Inputs;
+  Vector<InputInfo*> Inputs;
 
-  bool CountingFeatures = false;
+  size_t NumAddedFeatures = 0;
+  size_t NumUpdatedFeatures = 0;
   uint32_t InputSizesPerFeature[kFeatureSetSize];
   uint32_t SmallestElementPerFeature[kFeatureSetSize];
 

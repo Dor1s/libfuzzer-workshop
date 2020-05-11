@@ -1,9 +1,8 @@
 //===- FuzzerDictionary.h - Internal header for the Fuzzer ------*- C++ -* ===//
 //
-//                     The LLVM Compiler Infrastructure
-//
-// This file is distributed under the University of Illinois Open Source
-// License. See LICENSE.TXT for details.
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
 // fuzzer::Dictionary
@@ -34,12 +33,6 @@ public:
 
   bool operator==(const FixedWord<kMaxSize> &w) const {
     return Size == w.Size && 0 == memcmp(Data, w.Data, Size);
-  }
-
-  bool operator<(const FixedWord<kMaxSize> &w) const {
-    if (Size != w.Size)
-      return Size < w.Size;
-    return memcmp(Data, w.Data, Size) < 0;
   }
 
   static size_t GetMaxSize() { return kMaxSize; }
@@ -113,12 +106,12 @@ private:
 };
 
 // Parses one dictionary entry.
-// If successfull, write the enty to Unit and returns true,
+// If successful, write the enty to Unit and returns true,
 // otherwise returns false.
 bool ParseOneDictionaryEntry(const std::string &Str, Unit *U);
 // Parses the dictionary file, fills Units, returns true iff all lines
-// were parsed succesfully.
-bool ParseDictionaryFile(const std::string &Text, std::vector<Unit> *Units);
+// were parsed successfully.
+bool ParseDictionaryFile(const std::string &Text, Vector<Unit> *Units);
 
 }  // namespace fuzzer
 

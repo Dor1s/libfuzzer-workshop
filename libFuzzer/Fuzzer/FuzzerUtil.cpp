@@ -1,9 +1,8 @@
 //===- FuzzerUtil.cpp - Misc utils ----------------------------------------===//
 //
-//                     The LLVM Compiler Infrastructure
-//
-// This file is distributed under the University of Illinois Open Source
-// License. See LICENSE.TXT for details.
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
 // Misc utils.
@@ -16,6 +15,7 @@
 #include <chrono>
 #include <cstring>
 #include <errno.h>
+#include <mutex>
 #include <signal.h>
 #include <sstream>
 #include <stdio.h>
@@ -124,7 +124,7 @@ bool ParseOneDictionaryEntry(const std::string &Str, Unit *U) {
   return true;
 }
 
-bool ParseDictionaryFile(const std::string &Text, std::vector<Unit> *Units) {
+bool ParseDictionaryFile(const std::string &Text, Vector<Unit> *Units) {
   if (Text.empty()) {
     Printf("ParseDictionaryFile: file does not exist or is empty\n");
     return false;
@@ -179,9 +179,13 @@ std::string Base64(const Unit &U) {
   return Res;
 }
 
+static std::mutex SymbolizeMutex;
+
 std::string DescribePC(const char *SymbolizedFMT, uintptr_t PC) {
-  if (!EF->__sanitizer_symbolize_pc) return "<can not symbolize>";
-  char PcDescr[1024];
+  std::unique_lock<std::mutex> l(SymbolizeMutex, std::try_to_lock);
+  if (!EF->__sanitizer_symbolize_pc || !l.owns_lock())
+    return "<can not symbolize>";
+  char PcDescr[1024] = {};
   EF->__sanitizer_symbolize_pc(reinterpret_cast<void*>(PC),
                                SymbolizedFMT, PcDescr, sizeof(PcDescr));
   PcDescr[sizeof(PcDescr) - 1] = 0;  // Just in case.
@@ -195,6 +199,18 @@ void PrintPC(const char *SymbolizedFMT, const char *FallbackFMT, uintptr_t PC) {
     Printf(FallbackFMT, PC);
 }
 
+void PrintStackTrace() {
+  std::unique_lock<std::mutex> l(SymbolizeMutex, std::try_to_lock);
+  if (EF->__sanitizer_print_stack_trace && l.owns_lock())
+    EF->__sanitizer_print_stack_trace();
+}
+
+void PrintMemoryProfile() {
+  std::unique_lock<std::mutex> l(SymbolizeMutex, std::try_to_lock);
+  if (EF->__sanitizer_print_memory_profile && l.owns_lock())
+    EF->__sanitizer_print_memory_profile(95, 8);
+}
+
 unsigned NumberOfCpuCores() {
   unsigned N = std::thread::hardware_concurrency();
   if (!N) {
@@ -205,14 +221,11 @@ unsigned NumberOfCpuCores() {
   return N;
 }
 
-bool ExecuteCommandAndReadOutput(const std::string &Command, std::string *Out) {
-  FILE *Pipe = OpenProcessPipe(Command.c_str(), "r");
-  if (!Pipe) return false;
-  char Buff[1024];
-  size_t N;
-  while ((N = fread(Buff, 1, sizeof(Buff), Pipe)) > 0)
-    Out->append(Buff, N);
-  return true;
+size_t SimpleFastHash(const uint8_t *Data, size_t Size) {
+  size_t Res = 0;
+  for (size_t i = 0; i < Size; i++)
+    Res = Res * 11 + Data[i];
+  return Res;
 }
 
 }  // namespace fuzzer

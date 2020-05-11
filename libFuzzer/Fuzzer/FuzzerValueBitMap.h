@@ -1,9 +1,8 @@
 //===- FuzzerValueBitMap.h - INTERNAL - Bit map -----------------*- C++ -* ===//
 //
-//                     The LLVM Compiler Infrastructure
-//
-// This file is distributed under the University of Illinois Open Source
-// License. See LICENSE.TXT for details.
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
 // ValueBitMap.
@@ -35,7 +34,7 @@ struct ValueBitMap {
     uintptr_t WordIdx = Idx / kBitsInWord;
     uintptr_t BitIdx = Idx % kBitsInWord;
     uintptr_t Old = Map[WordIdx];
-    uintptr_t New = Old | (1UL << BitIdx);
+    uintptr_t New = Old | (1ULL << BitIdx);
     Map[WordIdx] = New;
     return New != Old;
   }
@@ -49,30 +48,10 @@ struct ValueBitMap {
     assert(Idx < kMapSizeInBits);
     uintptr_t WordIdx = Idx / kBitsInWord;
     uintptr_t BitIdx = Idx % kBitsInWord;
-    return Map[WordIdx] & (1UL << BitIdx);
+    return Map[WordIdx] & (1ULL << BitIdx);
   }
 
-  size_t GetNumBitsSinceLastMerge() const { return NumBits; }
-
-  // Merges 'Other' into 'this', clears 'Other', updates NumBits,
-  // returns true if new bits were added.
-  ATTRIBUTE_TARGET_POPCNT
-  bool MergeFrom(ValueBitMap &Other) {
-    uintptr_t Res = 0;
-    size_t OldNumBits = NumBits;
-    for (size_t i = 0; i < kMapSizeInWords; i++) {
-      auto O = Other.Map[i];
-      auto M = Map[i];
-      if (O) {
-        Map[i] = (M |= O);
-        Other.Map[i] = 0;
-      }
-      if (M)
-        Res += __builtin_popcountll(M);
-    }
-    NumBits = Res;
-    return OldNumBits < NumBits;
-  }
+  size_t SizeInBits() const { return kMapSizeInBits; }
 
   template <class Callback>
   ATTRIBUTE_NO_SANITIZE_ALL
@@ -85,8 +64,7 @@ struct ValueBitMap {
   }
 
  private:
-  size_t NumBits = 0;
-  uintptr_t Map[kMapSizeInWords] __attribute__((aligned(512)));
+  ATTRIBUTE_ALIGNED(512) uintptr_t Map[kMapSizeInWords];
 };
 
 }  // namespace fuzzer
