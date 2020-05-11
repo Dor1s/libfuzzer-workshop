@@ -15,11 +15,11 @@ cd libxml2
 
 ./autogen.sh
 
-export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep,trace-pc-guard"
+export FUZZ_CXXFLAGS_NO_LINK="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep"
 
-CXX="clang++ $FUZZ_CXXFLAGS" CC="clang $FUZZ_CXXFLAGS" \
-    CCLD="clang++ $FUZZ_CXXFLAGS"  ./configure
+CXX="clang++ $FUZZ_CXXFLAGS_NO_LINK" CC="clang $FUZZ_CXXFLAGS_NO_LINK" \
+    CCLD="clang++ $FUZZ_CXXFLAGS_NO_LINK"  ./configure
 make -j$(nproc)
 ```
 
@@ -53,6 +53,10 @@ Then build it:
 
 ```bash
 cd ..
+
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
+    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep"
+
 clang++ -std=c++11 xml_read_memory_fuzzer.cc $FUZZ_CXXFLAGS -I libxml2/include \
     libxml2/.libs/libxml2.a ../../libFuzzer/libFuzzer.a -lz \
     -o xml_read_memory_fuzzer
