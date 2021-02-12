@@ -51,3 +51,6 @@ cmake -G "Ninja" \
 ninja -j$(nproc)
 sudo ninja install
 rm -rf $WORK_DIR/work/llvm
+
+cd $WORK_DIR/libFuzzer/Fuzzer
+./build.sh
