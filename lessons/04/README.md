@@ -34,7 +34,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
 Compile the fuzzer in the following way:
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
+clang++ -g -std=c++11 -fsanitize=fuzzer,address \
     first_fuzzer.cc ../../libFuzzer/libFuzzer.a \
     -o first_fuzzer
 ```
