@@ -15,7 +15,7 @@ cd openssl1.0.1f/
 
 ./config
 make clean
-make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j$(nproc)
+make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j$(nproc)
 ```
 
 ### Build and run the fuzzer
