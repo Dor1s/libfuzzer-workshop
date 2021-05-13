@@ -15,7 +15,7 @@ cd openssl1.0.1f/
 
 ./config
 make clean
-make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div" -j$(nproc)
+make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address -fsanitize-coverage=trace-cmp,trace-gep,trace-div" -j$(nproc)
 ```
 
 ### Build and run the fuzzer
@@ -71,10 +71,10 @@ Build the fuzzer:
 
 ```bash
 cd ..
-clang++ -g openssl_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address \
-    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div \
+clang++ -g openssl_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address,fuzzer \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div \
     -Iopenssl1.0.1f/include openssl1.0.1f/libssl.a openssl1.0.1f/libcrypto.a \
-    ../../libFuzzer/libFuzzer.a -o openssl_fuzzer
+    -o openssl_fuzzer
 ```
 
 Run the fuzzer:
