@@ -34,7 +34,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
 Compile the fuzzer in the following way:
 ```bash
-clang++ -g -std=c++11 -fsanitize=address,fuzzer -o first_fuzzer
+clang++ -g -std=c++11 -fsanitize=address,fuzzer first_fuzzer.cc -o first_fuzzer
 ```
 
 Create an empty directory for corpus and run the fuzzer:
