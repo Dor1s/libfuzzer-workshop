@@ -13,8 +13,8 @@ cd pcre2
 
 ./autogen.sh
 
-export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div"
 
 CXX="clang++ $FUZZ_CXXFLAGS" CC="clang $FUZZ_CXXFLAGS" \
     CCLD="clang++ $FUZZ_CXXFLAGS" ./configure --enable-never-backslash-C \
@@ -30,7 +30,8 @@ cd ..
 
 clang++ -std=c++11 pcre2_fuzzer.cc -I pcre2/src \
     -Wl,--whole-archive pcre2/.libs/*.a -Wl,-no-whole-archive \
-    ../../libFuzzer/libFuzzer.a $FUZZ_CXXFLAGS -o pcre2_fuzzer
+    -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div -o pcre2_fuzzer
 
 mkdir corpus1
 ./pcre2_fuzzer ./corpus1 -print_final_stats=1 -max_total_time=300
@@ -52,8 +53,8 @@ cd pcre2-10.00
 
 ./autogen.sh
 
-export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div"
 
 CXX="clang++ $FUZZ_CXXFLAGS" CC="clang $FUZZ_CXXFLAGS" \
     CCLD="clang++ $FUZZ_CXXFLAGS" ./configure --enable-never-backslash-C \
@@ -65,7 +66,8 @@ cd ..
 
 clang++ -std=c++11 pcre2_fuzzer.cc -I pcre2-10.00/src \
     -Wl,--whole-archive pcre2-10.00/.libs/*.a -Wl,-no-whole-archive \
-    ../../libFuzzer/libFuzzer.a $FUZZ_CXXFLAGS -o pcre2_10.00_fuzzer
+    -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div -o pcre2_10.00_fuzzer
 
 mkdir corpus2
 ./pcre2_10.00_fuzzer ./corpus2 -print_final_stats=1 -max_total_time=300
