@@ -20,8 +20,8 @@ mv scripts/pnglibconf.dfa.temp scripts/pnglibconf.dfa
 # build the library.
 autoreconf -f -i
 
-export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div"
 
 ./configure CC="clang" CFLAGS="$FUZZ_CXXFLAGS"
 make -j2
@@ -37,8 +37,9 @@ Build the fuzzer:
 
 ```bash
 cd ..
-clang++ -std=c++11 libpng_read_fuzzer.cc $FUZZ_CXXFLAGS -I libpng \
-    libpng/.libs/libpng16.a ../../libFuzzer/libFuzzer.a -lz \
+clang++ -std=c++11 libpng_read_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div -I libpng \
+    libpng/.libs/libpng16.a -lz \
     -o libpng_read_fuzzer
 ```
 
