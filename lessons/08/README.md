@@ -15,8 +15,8 @@ cd libxml2
 
 ./autogen.sh
 
-export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep,trace-pc-guard"
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep"
 
 CXX="clang++ $FUZZ_CXXFLAGS" CC="clang $FUZZ_CXXFLAGS" \
     CCLD="clang++ $FUZZ_CXXFLAGS"  ./configure
@@ -53,8 +53,9 @@ Then build it:
 
 ```bash
 cd ..
-clang++ -std=c++11 xml_read_memory_fuzzer.cc $FUZZ_CXXFLAGS -I libxml2/include \
-    libxml2/.libs/libxml2.a ../../libFuzzer/libFuzzer.a -lz \
+clang++ -std=c++11 xml_read_memory_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
+    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep -I libxml2/include \
+    -lz -llzma\
     -o xml_read_memory_fuzzer
 ```
 
@@ -240,8 +241,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Let's build it and run:
 
 ```bash
-clang++ -std=c++11 xml_compile_regexp_fuzzer.cc $FUZZ_CXXFLAGS \
-    -I libxml2/include libxml2/.libs/libxml2.a ../../libFuzzer/libFuzzer.a -lz \
+clang++ -std=c++11 xml_compile_regexp_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
+    -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep \
+    -I libxml2/include libxml2/.libs/libxml2.a -lz -llzma\
     -o xml_compile_regexp_fuzzer
 
 mkdir corpus3

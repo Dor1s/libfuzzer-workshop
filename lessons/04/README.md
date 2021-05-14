@@ -34,9 +34,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
 Compile the fuzzer in the following way:
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
-    first_fuzzer.cc ../../libFuzzer/libFuzzer.a \
-    -o first_fuzzer
+clang++ -g -std=c++11 -fsanitize=address,fuzzer first_fuzzer.cc -o first_fuzzer
 ```
 
 Create an empty directory for corpus and run the fuzzer:
@@ -203,9 +201,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Compile the fuzzer:
 
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
-    second_fuzzer.cc ../../libFuzzer/libFuzzer.a \
-    -o second_fuzzer
+clang++ -g -std=c++11 -fsanitize=address,fuzzer second_fuzzer.cc -o second_fuzzer
 ```
 
 Run the fuzzer:
@@ -254,9 +250,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Compile the fuzzer:
 
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
-    third_fuzzer.cc ../../libFuzzer/libFuzzer.a \
-    -o third_fuzzer
+clang++ -g -std=c++11 -fsanitize=address,fuzzer third_fuzzer.cc -o third_fuzzer
 ```
 
 Run the fuzzer on the same corpus:
@@ -361,9 +355,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 Compile the fuzzer:
 
 ```bash
-clang++ -g -std=c++11 -fsanitize=address -fsanitize-coverage=trace-pc-guard \
-    fourth_fuzzer.cc ../../libFuzzer/libFuzzer.a \
-    -o fourth_fuzzer
+clang++ -g -std=c++11 -fsanitize=address,fuzzer fourth_fuzzer.cc -o fourth_fuzzer
 ```
 
 and run on the empty corpus:

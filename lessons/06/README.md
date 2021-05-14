@@ -15,8 +15,8 @@ tar xzvf c-ares.tgz
 cd c-ares
 
 ./buildconf
-./configure CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
-make CFLAGS=
+./configure
+make CC="clang -O2 -fno-omit-frame-pointer -g -fsanitize=address -fsanitize-coverage=trace-cmp,trace-gep,trace-div"
 ```
 
 ### Build and run the fuzzer
@@ -41,10 +41,9 @@ Build the fuzzer:
 
 ```bash
 cd ..
-clang++ -g c_ares_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address \
-    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div \
-    -Ic-ares c-ares/.libs/libcares.a \
-    ../../libFuzzer/libFuzzer.a -o c_ares_fuzzer
+clang++ -g c_ares_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address,fuzzer \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div \
+    -Ic-ares c-ares/.libs/libcares.a -o c_ares_fuzzer
 ```
 
 And run it:
