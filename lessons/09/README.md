@@ -37,7 +37,7 @@ Build the fuzzer:
 
 ```bash
 cd ..
-clang++ -std=c++11 libpng_read_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+clang++ -std=c++11 libpng_read_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer\
     -fsanitize-coverage=trace-cmp,trace-gep,trace-div -I libpng \
     libpng/.libs/libpng16.a -lz \
     -o libpng_read_fuzzer
