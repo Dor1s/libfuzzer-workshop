@@ -10,8 +10,8 @@ Here we will be fuzzing [re2]. During this lesson we will:
 tar xzf re2.tgz
 cd re2
 
-export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address \
-    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div"
+export FUZZ_CXXFLAGS="-O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer-no-link \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div"
 
 make clean
 CXX=clang++ CXXFLAGS="$FUZZ_CXXFLAGS"  make -j
@@ -22,8 +22,9 @@ CXX=clang++ CXXFLAGS="$FUZZ_CXXFLAGS"  make -j
 ```bash
 cd ..
 
-clang++ -std=c++11 re2_fuzzer.cc $FUZZ_CXXFLAGS -I re2 \
-    re2/obj/libre2.a ../../libFuzzer/libFuzzer.a -lz \
+clang++ -std=c++11 re2_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
+    -fsanitize-coverage=trace-cmp,trace-gep,trace-div -I re2 \
+    re2/obj/libre2.a  -lz \
     -o re2_fuzzer
 
 mkdir corpus1
