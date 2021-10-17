@@ -4,6 +4,14 @@ Materials of *"Modern fuzzing of C/C++ Projects"* workshop.
 The first version of the workshop had been presented at [ZeroNights'16] security
 conference.
 
+## Disclaimer
+
+This workshop was originally developed in 2016. As of today (2021 and beyond),
+the practical side of the workshop might be not working right away, because
+libFuzzer greatly evolved over the years. The theoretical part of the workshop
+is a good learning material still, but for the practical lessons it is
+recommended to follow the most recent version of the [libFuzzer tutorial].
+
 ## Requirements
 
 * 2-3 hours of your time
