@@ -28,11 +28,11 @@ WORK_DIR=$PWD
 mkdir -p $WORK_DIR/src
 
 # Checkout
-cd $WORK_DIR/src && git clone --depth 1 http://llvm.org/git/llvm.git
-cd $WORK_DIR/src/llvm/tools && git clone --depth 1 http://llvm.org/git/clang.git
-cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/compiler-rt.git
-cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/libcxx.git
-cd $WORK_DIR/src/llvm/projects && git clone --depth 1 http://llvm.org/git/libcxxabi.git
+cd $WORK_DIR/src && git clone --depth 1 https://github.com/llvm-mirror/llvm.git
+cd $WORK_DIR/src/llvm/tools && git clone --depth 1 https://github.com/llvm-mirror/clang.git
+cd $WORK_DIR/src/llvm/projects && git clone --depth 1 https://github.com/llvm-mirror/compiler-rt.git
+cd $WORK_DIR/src/llvm/projects && git clone --depth 1 https://github.com/llvm-mirror/libcxx.git
+cd $WORK_DIR/src/llvm/projects && git clone --depth 1 https://github.com/llvm-mirror/libcxxabi.git
 
 # Uncomment if you want *fresh* libFuzzer from checkouted repository.
 #rm -r $WORK_DIR/libFuzzer/Fuzzer
@@ -52,4 +52,5 @@ ninja -j$(nproc)
 sudo ninja install
 rm -rf $WORK_DIR/work/llvm
 
-
+cd $WORK_DIR/libFuzzer/Fuzzer
+./build.sh
