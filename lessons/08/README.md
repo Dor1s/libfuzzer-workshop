@@ -55,7 +55,7 @@ Then build it:
 cd ..
 clang++ -std=c++11 xml_read_memory_fuzzer.cc -O2 -fno-omit-frame-pointer -g -fsanitize=address,fuzzer \
     -fsanitize-coverage=edge,indirect-calls,trace-cmp,trace-div,trace-gep -I libxml2/include \
-    -lz -llzma\
+    libxml2/.libs/libxml2.a -lz -llzma \
     -o xml_read_memory_fuzzer
 ```
 
